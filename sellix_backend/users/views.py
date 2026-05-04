@@ -15,7 +15,7 @@ class UserMeViewSet(APIView):
     
     def patch(self, req):
         user = req.user
-        serializer = CustomUserSerializer(user, data=req.data, partial=True)
+        serializer = CustomUserSerializer(user,data=req.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

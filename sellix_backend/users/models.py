@@ -40,7 +40,7 @@ class CustomUser(AbstractUser):
     username = None
     name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_CHOICES[0][0])
     
     objects = UserManager()
 
