@@ -1,0 +1,597 @@
+{
+  "products": [
+    {
+      "id": "2",
+      "name": "SuperStar Classic",
+      "brand": "Adidas",
+      "price": 3599,
+      "discount": 0,
+      "finalPrice": 3599,
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 4
+        },
+        {
+          "size": 8,
+          "stock": 12
+        },
+        {
+          "size": 9,
+          "stock": 6
+        },
+        {
+          "size": 10,
+          "stock": 2
+        }
+      ],
+      "colors": [
+        {
+          "colorName": "White",
+          "hex": "#FFFFFF",
+          "images": [
+            "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "description": "The timeless classic built for the streets.",
+      "ratings": 4.7,
+      "reviewsCount": 210,
+      "category": "casual"
+    },
+    {
+      "id": "3",
+      "name": "Zoom Freak 4",
+      "brand": "Nike",
+      "price": 10500,
+      "discount": 15,
+      "finalPrice": 8925,
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 7
+        },
+        {
+          "size": 9,
+          "stock": 5
+        },
+        {
+          "size": 11,
+          "stock": 2
+        }
+      ],
+      "colors": [
+        {
+          "colorName": "Red",
+          "hex": "#FF0000",
+          "images": [
+            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+          ]
+        },
+        {
+          "colorName": "Blue",
+          "hex": "#0000FF",
+          "images": [
+            "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "description": "Unleash your inner freak with responsive cushioning.",
+      "ratings": 4.8,
+      "reviewsCount": 85,
+      "category": "formal"
+    },
+    {
+      "id": "4",
+      "name": "Old Skool",
+      "brand": "Vans",
+      "price": 3200,
+      "discount": 0,
+      "finalPrice": 3200,
+      "sizes": [
+        {
+          "size": 6,
+          "stock": 10
+        },
+        {
+          "size": 7,
+          "stock": 8
+        },
+        {
+          "size": 8,
+          "stock": 15
+        }
+      ],
+      "colors": [
+        {
+          "colorName": "Black/White",
+          "hex": "#000000",
+          "images": [
+            "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "description": "The iconic side-stripe shoe that started it all.",
+      "ratings": 4.6,
+      "reviewsCount": 350,
+      "category": "sports"
+    },
+    {
+      "id": "5",
+      "name": "Air Force 1",
+      "brand": "Nike",
+      "price": 8200,
+      "discount": 10,
+      "finalPrice": 7380,
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 2
+        },
+        {
+          "size": 8,
+          "stock": 4
+        },
+        {
+          "size": 9,
+          "stock": 9
+        },
+        {
+          "size": 10,
+          "stock": 5
+        }
+      ],
+      "colors": [
+        {
+          "colorName": "White",
+          "hex": "#FFFFFF",
+          "images": [
+            "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "description": "Legendary style, refined for the modern sneakerhead.",
+      "ratings": 4.9,
+      "reviewsCount": 890,
+      "category": "casual"
+    },
+    {
+      "id": "6",
+      "name": "UltraBoost DNA",
+      "brand": "Adidas",
+      "price": 15999,
+      "discount": 25,
+      "finalPrice": 11999,
+      "description": "Premium running shoe with Boost cushioning technology.",
+      "ratings": 4.8,
+      "reviewsCount": 342,
+      "colors": [
+        {
+          "colorName": "Black",
+          "hex": "#000000",
+          "images": [
+            "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 12
+        },
+        {
+          "size": 9,
+          "stock": 15
+        },
+        {
+          "size": 10,
+          "stock": 10
+        }
+      ],
+      "category": "formal"
+    },
+    {
+      "id": "7",
+      "name": "Court Vision",
+      "brand": "Nike",
+      "price": 5499,
+      "discount": 15,
+      "finalPrice": 4674,
+      "description": "Classic basketball-inspired style for everyday wear.",
+      "ratings": 4.3,
+      "reviewsCount": 156,
+      "colors": [
+        {
+          "colorName": "White",
+          "hex": "#FFFFFF",
+          "images": [
+            "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 20
+        },
+        {
+          "size": 8,
+          "stock": 18
+        },
+        {
+          "size": 9,
+          "stock": 15
+        }
+      ],
+      "category": "sports"
+    },
+    {
+      "id": "8",
+      "name": "Chuck Taylor All Star",
+      "brand": "Converse",
+      "price": 4299,
+      "discount": 0,
+      "finalPrice": 4299,
+      "description": "The original canvas sneaker, iconic since 1917.",
+      "ratings": 4.7,
+      "reviewsCount": 512,
+      "colors": [
+        {
+          "colorName": "Black",
+          "hex": "#000000",
+          "images": [
+            "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 25
+        },
+        {
+          "size": 8,
+          "stock": 30
+        },
+        {
+          "size": 9,
+          "stock": 28
+        }
+      ],
+      "category": "casual"
+    },
+    {
+      "id": "9",
+      "name": "Suede Classic",
+      "brand": "Puma",
+      "price": 5999,
+      "discount": 20,
+      "finalPrice": 4799,
+      "description": "Timeless suede sneaker with a heritage look.",
+      "ratings": 4.5,
+      "reviewsCount": 234,
+      "colors": [
+        {
+          "colorName": "Navy",
+          "hex": "#000080",
+          "images": [
+            "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 14
+        },
+        {
+          "size": 9,
+          "stock": 16
+        },
+        {
+          "size": 10,
+          "stock": 12
+        }
+      ],
+      "category": "formal"
+    },
+    {
+      "id": "10",
+      "name": "990v5",
+      "brand": "New Balance",
+      "price": 17999,
+      "discount": 10,
+      "finalPrice": 16199,
+      "description": "Made in USA with premium materials for ultimate comfort.",
+      "ratings": 4.9,
+      "reviewsCount": 289,
+      "colors": [
+        {
+          "colorName": "Gray",
+          "hex": "#808080",
+          "images": [
+            "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 8
+        },
+        {
+          "size": 9,
+          "stock": 10
+        },
+        {
+          "size": 10,
+          "stock": 7
+        }
+      ],
+      "category": "sports"
+    },
+    {
+      "id": "11",
+      "name": "Gel-Kayano 29",
+      "brand": "Asics",
+      "price": 14999,
+      "discount": 18,
+      "finalPrice": 12299,
+      "description": "Stability running shoe with superior cushioning.",
+      "ratings": 4.6,
+      "reviewsCount": 178,
+      "colors": [
+        {
+          "colorName": "Blue",
+          "hex": "#0000FF",
+          "images": [
+            "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 11
+        },
+        {
+          "size": 9,
+          "stock": 13
+        },
+        {
+          "size": 10,
+          "stock": 9
+        }
+      ],
+      "category": "casual"
+    },
+    {
+      "id": "12",
+      "name": "Classic Leather",
+      "brand": "Reebok",
+      "price": 6499,
+      "discount": 22,
+      "finalPrice": 5069,
+      "description": "Soft garment leather upper with a comfortable fit.",
+      "ratings": 4.4,
+      "reviewsCount": 195,
+      "colors": [
+        {
+          "colorName": "White",
+          "hex": "#FFFFFF",
+          "images": [
+            "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 16
+        },
+        {
+          "size": 8,
+          "stock": 19
+        },
+        {
+          "size": 9,
+          "stock": 14
+        }
+      ],
+      "category": "formal"
+    },
+    {
+      "id": "13",
+      "name": "Authentics",
+      "brand": "Vans",
+      "price": 3799,
+      "discount": 0,
+      "finalPrice": 3799,
+      "description": "The original and now iconic Vans style.",
+      "ratings": 4.5,
+      "reviewsCount": 421,
+      "colors": [
+        {
+          "colorName": "Black",
+          "hex": "#000000",
+          "images": [
+            "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 22
+        },
+        {
+          "size": 8,
+          "stock": 26
+        },
+        {
+          "size": 9,
+          "stock": 24
+        }
+      ],
+      "category": "sports"
+    },
+    {
+      "id": "14",
+      "name": "Jordan 1 Mid",
+      "brand": "Nike",
+      "price": 11999,
+      "discount": 12,
+      "finalPrice": 10559,
+      "description": "The legend returns with classic Jordan style.",
+      "ratings": 4.8,
+      "reviewsCount": 567,
+      "colors": [
+        {
+          "colorName": "Red",
+          "hex": "#DC143C",
+          "images": [
+            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 6
+        },
+        {
+          "size": 9,
+          "stock": 8
+        },
+        {
+          "size": 10,
+          "stock": 5
+        }
+      ],
+      "category": "casual"
+    },
+    {
+      "id": "15",
+      "name": "Speedcross 5",
+      "brand": "Salomon",
+      "price": 12999,
+      "discount": 15,
+      "finalPrice": 11049,
+      "description": "Trail running shoe with aggressive grip.",
+      "ratings": 4.7,
+      "reviewsCount": 143,
+      "colors": [
+        {
+          "colorName": "Orange",
+          "hex": "#FF8C00",
+          "images": [
+            "https://images.unsplash.com/photo-1562183241-b937e95585b6?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 8,
+          "stock": 9
+        },
+        {
+          "size": 9,
+          "stock": 11
+        },
+        {
+          "size": 10,
+          "stock": 8
+        }
+      ],
+      "category": "formal"
+    },
+    {
+      "id": "16",
+      "name": "Cali Sport",
+      "brand": "Puma",
+      "price": 7999,
+      "discount": 25,
+      "finalPrice": 5999,
+      "description": "Modern sporty sneaker with bold styling.",
+      "ratings": 4.3,
+      "reviewsCount": 167,
+      "colors": [
+        {
+          "colorName": "White",
+          "hex": "#FFFFFF",
+          "images": [
+            "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 13
+        },
+        {
+          "size": 8,
+          "stock": 17
+        },
+        {
+          "size": 9,
+          "stock": 15
+        }
+      ],
+      "category": "sports"
+    },
+    {
+      "id": "17",
+      "name": "Stan Smith",
+      "brand": "Adidas",
+      "price": 8499,
+      "discount": 18,
+      "finalPrice": 6969,
+      "description": "Clean and simple tennis-inspired sneaker.",
+      "ratings": 4.8,
+      "reviewsCount": 678,
+      "colors": [
+        {
+          "colorName": "White",
+          "hex": "#FFFFFF",
+          "images": [
+            "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400&h=400&fit=crop"
+          ]
+        }
+      ],
+      "sizes": [
+        {
+          "size": 7,
+          "stock": 18
+        },
+        {
+          "size": 8,
+          "stock": 21
+        },
+        {
+          "size": 9,
+          "stock": 19
+        }
+      ],
+      "category": "casual"
+    },
+    {
+      "name": "example 1",
+      "brand": "nike",
+      "category": "men",
+      "price": 2000,
+      "description": "eeeeeeeeeee",
+      "image": "https://www.bing.com/th/id/OIP.xiLk6II7SS7bLC-CXwSykwHaE8?w=246&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2",
+      "colors": [
+        {
+          "name": "Default",
+          "images": [
+            "https://www.bing.com/th/id/OIP.xiLk6II7SS7bLC-CXwSykwHaE8?w=246&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
+          ],
+          "sizes": [38, 39, 40, 41, 42, 43, 44]
+        }
+      ],
+      "id": "486e"
+    }
+  ]
+}
