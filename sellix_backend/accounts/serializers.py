@@ -15,8 +15,8 @@ class ForgotPasswordSerializer(serializers.Serializer):
 # Reset Password - accepts token + new password
 class ResetPasswordSerializer(serializers.Serializer):
     token = serializers.UUIDField()
-    new_password = serializers.CharField(min_length=8, write_only=True)
-    confirm_password = serializers.CharField(min_length=8, write_only=True)
+    new_password = serializers.CharField(min_length=4, write_only=True)
+    confirm_password = serializers.CharField(min_length=4, write_only=True)
 
     def validate(self, data):
         if data['new_password'] != data['confirm_password']:
@@ -27,8 +27,8 @@ class ResetPasswordSerializer(serializers.Serializer):
 # Change Password - for logged-in users
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(min_length=8, write_only=True)
-    confirm_password = serializers.CharField(min_length=8, write_only=True)
+    new_password = serializers.CharField(min_length=4, write_only=True)
+    confirm_password = serializers.CharField(min_length=4, write_only=True)
 
     def validate(self, data):
         if data['new_password'] != data['confirm_password']:

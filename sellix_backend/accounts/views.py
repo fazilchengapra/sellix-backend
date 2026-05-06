@@ -40,7 +40,7 @@ class LogoutView(APIView):
             return Response(status=400)
 
 
-# ✅ Step 1: User submits email → generate token → send email
+# Step 1: User submits email → generate token → send email
 class ForgotPasswordView(APIView):
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
@@ -60,15 +60,15 @@ class ForgotPasswordView(APIView):
             reset_link = f"{settings.FRONTEND_URL}/reset-password/{reset_token.token}"
 
             # Send email
-            send_mail(
-                subject="Password Reset Request",
-                message=f"Hi {user.username},\n\nClick the link below to reset your password:\n{reset_link}\n\nThis link expires in 15 minutes.\n\nIf you did not request this, ignore this email.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-            )
+            # send_mail(
+            #     subject="Password Reset Request",
+            #     message=f"Hi {user.username},\n\nClick the link below to reset your password:\n{reset_link}\n\nThis link expires in 15 minutes.\n\nIf you did not request this, ignore this email.",
+            #     from_email=settings.DEFAULT_FROM_EMAIL,
+            #     recipient_list=[email],
+            # )
 
             return Response(
-                {"message": "Password reset link sent to your email."},
+                {"message": "Password reset link sent to your email.", 'token-for-testing': str(reset_token.token)},
                 status=status.HTTP_200_OK,
             )
 
