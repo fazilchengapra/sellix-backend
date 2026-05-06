@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import CustomUser as User
 from .models import EmailVerificationToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 # Forgot Password - accepts email
@@ -58,3 +59,13 @@ class VerifyAccountSerializer(serializers.Serializer):
 
         self.context["token_obj"] = token_obj
         return value
+    
+    
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        if not self.user.is_verified:
+            raise serializers.ValidationError("Account not verified. Please check your email.")
+        
+        return data

@@ -18,6 +18,8 @@ from .serializers import VerifyAccountSerializer
 from rest_framework.permissions import AllowAny
 from .models import EmailVerificationToken
 from .utils import send_verification_email
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 
 # Create your views here.
@@ -185,3 +187,6 @@ class VerifyAccountView(APIView):
             {"detail": "Account verified successfully. You can now log in."},
             status=status.HTTP_200_OK,
         )
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
