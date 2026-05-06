@@ -46,8 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework_simplejwt.token_blacklist",
     "django_filters",
-    
-    
+    "accounts",
     "users",
     "products",
     "cart",
@@ -98,6 +97,15 @@ DATABASES = {
         "PORT": os.getenv("PORT"),
     }
 }
+
+# smtp settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "shoppeemailer@gmail.com"
+EMAIL_HOST_PASSWORD = "menp qjoh yawl hcim"  # App Password, not Gmail password
+DEFAULT_FROM_EMAIL = "shoppeemailer@gmail.com"
 
 
 # Password validation
