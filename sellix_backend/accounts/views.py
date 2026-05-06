@@ -14,6 +14,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import status
 from users.models import CustomUser as User
+from .serializers import VerifyAccountSerializer
+from rest_framework.permissions import AllowAny
+from .models import EmailVerificationToken
+from .utils import send_verification_email
 
 
 # Create your views here.
@@ -22,7 +26,15 @@ class RegisterViewSet(APIView):
         serializer = CustomUserSerializer(data=req.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(CustomUserSerializer(user).data)
+            verification_token = EmailVerificationToken.objects.create(user=user)
+            send_verification_email(user, verification_token)
+            return Response(
+                {
+                    "message": "User registered successfully. Please check your email to verify your account.",
+                    "token": str(verification_token.token),
+                },
+                status=201,
+            )
         return Response(serializer.errors, status=400)
 
 
@@ -68,7 +80,10 @@ class ForgotPasswordView(APIView):
             # )
 
             return Response(
-                {"message": "Password reset link sent to your email.", 'token-for-testing': str(reset_token.token)},
+                {
+                    "message": "Password reset link sent to your email.",
+                    "token-for-testing": str(reset_token.token),
+                },
                 status=status.HTTP_200_OK,
             )
 
@@ -142,3 +157,31 @@ class ChangePasswordView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyAccountView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = VerifyAccountSerializer(
+            data=request.data, context={"request": request}
+        )
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        token_obj = serializer.context["token_obj"]
+        user = token_obj.user
+
+        # Mark user as verified
+        user.is_verified = True  # or a custom field like user.is_verified = True
+        user.save(update_fields=["is_verified"])
+
+        # Mark token as used
+        token_obj.is_used = True
+        token_obj.save(update_fields=["is_used"])
+
+        return Response(
+            {"detail": "Account verified successfully. You can now log in."},
+            status=status.HTTP_200_OK,
+        )

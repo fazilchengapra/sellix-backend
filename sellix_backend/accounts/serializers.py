@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
 from users.models import CustomUser as User
+from .models import EmailVerificationToken
+
 
 # Forgot Password - accepts email
 class ForgotPasswordSerializer(serializers.Serializer):
@@ -19,7 +20,7 @@ class ResetPasswordSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(min_length=4, write_only=True)
 
     def validate(self, data):
-        if data['new_password'] != data['confirm_password']:
+        if data["new_password"] != data["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match.")
         return data
 
@@ -31,6 +32,29 @@ class ChangePasswordSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(min_length=4, write_only=True)
 
     def validate(self, data):
-        if data['new_password'] != data['confirm_password']:
+        if data["new_password"] != data["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match.")
         return data
+
+
+class VerifyAccountSerializer(serializers.Serializer):
+    token = serializers.UUIDField()
+
+    def validate_token(self, value):
+        try:
+            token_obj = EmailVerificationToken.objects.select_related("user").get(
+                token=value
+            )
+        except EmailVerificationToken.DoesNotExist:
+            raise serializers.ValidationError("Invalid verification token.")
+
+        if token_obj.is_used:
+            raise serializers.ValidationError("This token has already been used.")
+
+        if not token_obj.is_valid():
+            raise serializers.ValidationError(
+                "Token has expired. Please request a new one."
+            )
+
+        self.context["token_obj"] = token_obj
+        return value
