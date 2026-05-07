@@ -14,9 +14,15 @@ class UserMeViewSet(APIView):
         return Response(serializer.data)
     
     def patch(self, req):
+        
+        if "password" in req.data:
+            return Response({"error": "Password cannot be updatable from here"}, status=400)
+        
         user = req.user
         serializer = CustomUserSerializer(user,data=req.data, partial=True)
+        
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
