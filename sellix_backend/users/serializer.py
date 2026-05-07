@@ -7,6 +7,14 @@ class CustomUserSerializer(ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True, required=False)
 
+    def validate(self, data):
+        if self.instance is None:
+            if data.get("password") != data.get("confirm_password"):
+                raise serializers.ValidationError(
+                    {"confirm_password": "Password and confirm password do not match."}
+                )
+        return data
+
     def create(self, validated_data):
         validated_data.pop("confirm_password", None)  # 🔥 remove it
 

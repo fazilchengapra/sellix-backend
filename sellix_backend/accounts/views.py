@@ -91,7 +91,8 @@ class ForgotPasswordView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# ✅ Step 2: User clicks link → validate token → set new password
+
+# Step 2: User clicks link → validate token → set new password
 class ResetPasswordView(APIView):
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
@@ -130,7 +131,7 @@ class ResetPasswordView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# ✅ Change Password (logged-in user only)
+# Change Password (logged-in user only)
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -186,6 +187,7 @@ class VerifyAccountView(APIView):
             {"detail": "Account verified successfully. You can now log in."},
             status=status.HTTP_200_OK,
         )
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
