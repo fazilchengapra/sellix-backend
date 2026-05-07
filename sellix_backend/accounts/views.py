@@ -33,7 +33,7 @@ class RegisterViewSet(APIView):
             return Response(
                 {
                     "message": "User registered successfully. Please check your email to verify your account.",
-                    "token": str(verification_token.token),
+                    "token_for_testing": str(verification_token.token),
                 },
                 status=201,
             )
@@ -54,7 +54,7 @@ class LogoutView(APIView):
             return Response(status=400)
 
 
-# Step 1: User submits email → generate token → send email
+# take email and perform operation
 class ForgotPasswordView(APIView):
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
@@ -70,10 +70,10 @@ class ForgotPasswordView(APIView):
             # Create new token
             reset_token = PasswordResetToken.objects.create(user=user)
 
-            # Build reset link
+            # Build reset link with frontend url
             reset_link = f"{settings.FRONTEND_URL}/reset-password/{reset_token.token}"
 
-            # Send email
+            # Send email for rest password with token
             # send_mail(
             #     subject="Password Reset Request",
             #     message=f"Hi {user.username},\n\nClick the link below to reset your password:\n{reset_link}\n\nThis link expires in 15 minutes.\n\nIf you did not request this, ignore this email.",
@@ -91,7 +91,6 @@ class ForgotPasswordView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 # ✅ Step 2: User clicks link → validate token → set new password
 class ResetPasswordView(APIView):
     def post(self, request):
@@ -107,7 +106,7 @@ class ResetPasswordView(APIView):
                     {"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Check if token is valid (not used, not expired)
+            # Check if token is valid
             if not reset_token.is_valid():
                 return Response(
                     {"error": "Token has expired or already been used."},

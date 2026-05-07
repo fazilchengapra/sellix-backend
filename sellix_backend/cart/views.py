@@ -22,7 +22,7 @@ class CartView(APIView):
 
     def post(self, request):
         try:
-            
+
             product_id = request.data.get("product_id")
             size = request.data.get("size")
             color = request.data.get("color")
@@ -33,7 +33,7 @@ class CartView(APIView):
             except Product.DoesNotExist:
                 return Response({"error": "Product not found"}, status=404)
 
-            # ✅ Validate size stock
+            #  Validate size stock
             try:
                 size_obj = ProductSize.objects.get(product=product, size=size)
             except ProductSize.DoesNotExist:
@@ -42,7 +42,7 @@ class CartView(APIView):
             if size_obj.stock < quantity:
                 return Response({"error": "Not enough stock"}, status=400)
 
-            # ✅ Get image (first image of that color)
+            #  Get image (first image of that color)
             color_obj = ProductColor.objects.filter(
                 product=product, color_name=color
             ).first()
@@ -51,7 +51,7 @@ class CartView(APIView):
             if color_obj and color_obj.images.exists():
                 image = color_obj.images.first().image
 
-            # ✅ Prevent duplicate items
+            #  Prevent duplicate items
             item, created = CartItem.objects.get_or_create(
                 user=request.user,
                 product=product,

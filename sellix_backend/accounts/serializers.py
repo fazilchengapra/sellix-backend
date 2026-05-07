@@ -59,13 +59,17 @@ class VerifyAccountSerializer(serializers.Serializer):
 
         self.context["token_obj"] = token_obj
         return value
-    
-    
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         
+        print(self.user)
+
         if not self.user.is_verified:
-            raise serializers.ValidationError("Account not verified. Please check your email.")
-        
+            raise serializers.ValidationError(
+                "Account not verified. Please check your email."
+            )
+
         return data
