@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 
 from .models import CartItem
 from products.models import Product, ProductSize, ProductColor
@@ -13,6 +12,7 @@ class CartView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        print("data is :", request.user)
         items = CartItem.objects.filter(user=request.user)
         serializer = CartItemSerializer(items, many=True)
 

@@ -44,6 +44,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        print("refresh token is :", request.data.get("refresh"))
         # Blacklist the refresh token
         try:
             refresh_token = request.data["refresh"]
@@ -51,7 +52,8 @@ class LogoutView(APIView):
             token.blacklist()
             return Response(status=205)
         except Exception as e:
-            return Response(status=400)
+            print("Error blacklisting token:", str(e))
+            return Response({"error": "Something went wrong"}, status=400)
 
 
 # take email and perform operation
