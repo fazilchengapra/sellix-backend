@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     "products",
     "cart",
     "orders",
-    "wishlist"
+    "wishlist",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -109,6 +110,11 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+# Razorpay settings
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+# RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET")
 
 
 # Password validation
@@ -170,7 +176,7 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = "users.CustomUser"
-APPEND_SLASH=False
+APPEND_SLASH = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/

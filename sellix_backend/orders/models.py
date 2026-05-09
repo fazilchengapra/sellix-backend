@@ -5,22 +5,34 @@ from products.models import Product
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Processing', 'Processing'),
-        ('Shipped', 'Shipped'),
-        ('Delivered', 'Delivered'),
-        ('Cancelled', 'Cancelled'),
+        ("Pending", "Pending"),
+        ("Processing", "Processing"),
+        ("Shipped", "Shipped"),
+        ("Delivered", "Delivered"),
+        ("Cancelled", "Cancelled"),
     ]
     PAYMENT_CHOICES = [
-        ('Card', 'Card'),
-        ('UPI', 'UPI'),
-        ('COD', 'COD'),
+        ("Card", "Card"),
+        ("UPI", "UPI"),
+        ("COD", "COD"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    PAYMENT_STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Paid", "Paid"),
+        ("Failed", "Failed"),
+        ("Refunded", "Refunded"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
     shipping = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='Card')
+    payment_method = models.CharField(
+        max_length=20, choices=PAYMENT_CHOICES, default="Card"
+    )
+    payment_status = models.CharField(
+        max_length=20, choices=PAYMENT_STATUS_CHOICES, default="Pending"
+    )
     card_name = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -37,8 +49,8 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='order_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="order_items")
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
 
     product_name = models.CharField(max_length=255)
