@@ -73,15 +73,14 @@ class ForgotPasswordView(APIView):
             reset_token = PasswordResetToken.objects.create(user=user)
 
             # Build reset link with frontend url
-            reset_link = f"{settings.FRONTEND_URL}/reset-password/{reset_token.token}"
+            reset_link = f"{settings.FRONTEND_URL}/reset-password?token{reset_token.token}"
 
-            # Send email for rest password with token
-            # send_mail(
-            #     subject="Password Reset Request",
-            #     message=f"Hi {user.username},\n\nClick the link below to reset your password:\n{reset_link}\n\nThis link expires in 15 minutes.\n\nIf you did not request this, ignore this email.",
-            #     from_email=settings.DEFAULT_FROM_EMAIL,
-            #     recipient_list=[email],
-            # )
+            send_mail(
+                subject="Password Reset Request",
+                message=f"Hi {user.username},\n\nClick the link below to reset your password:\n{reset_link}\n\nThis link expires in 15 minutes.\n\nIf you did not request this, ignore this email.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+            )
 
             return Response(
                 {

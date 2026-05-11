@@ -7,16 +7,17 @@ from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from cart.models import CartItem
+from common.permissions import IsNormalUser
 
 
 class OrderListCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def get(self, request):
         """Get all orders for logged in user"""
         orders = Order.objects.filter(
             user=request.user
-        ).prefetch_related('items').order_by('-created_at')
+        ).prefetch_related('items').order_by('-created_at').exclude(payment_status='Pending')
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
 
@@ -41,7 +42,7 @@ class OrderListCreateView(APIView):
         shipping = request.data.get('shipping', 0)
 
         # 3. Validate payment method
-        valid_payments = ['Card', 'UPI', 'COD']
+        valid_payments = ['COD', "Razorpay"]
         if payment_method not in valid_payments:
             return Response(
                 {"error": f"payment_method must be one of {valid_payments}"},
@@ -79,7 +80,7 @@ class OrderListCreateView(APIView):
 
 
 class OrderDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def get(self, request, order_id):
         """Get single order"""

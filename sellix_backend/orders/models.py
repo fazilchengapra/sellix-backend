@@ -15,6 +15,7 @@ class Order(models.Model):
         ("Card", "Card"),
         ("UPI", "UPI"),
         ("COD", "COD"),
+        ("Razorpay", "Razorpay"),
     ]
 
     PAYMENT_STATUS_CHOICES = [
@@ -28,7 +29,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
     shipping = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     payment_method = models.CharField(
-        max_length=20, choices=PAYMENT_CHOICES, default="Card"
+        max_length=20, choices=PAYMENT_CHOICES, default="UPI", blank=True, null=True
     )
     payment_status = models.CharField(
         max_length=20, choices=PAYMENT_STATUS_CHOICES, default="Pending"

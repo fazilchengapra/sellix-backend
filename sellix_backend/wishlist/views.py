@@ -5,10 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Wishlist, WishlistItem
 from .serializers import WishlistSerializer, WishlistItemSerializer
 from products.models import Product
+from common.permissions import IsNormalUser
 
 
 class WishlistView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def get_wishlist(self, user):
         wishlist, _ = Wishlist.objects.get_or_create(user=user)
@@ -38,7 +39,7 @@ class WishlistView(APIView):
         return Response(WishlistItemSerializer(item).data, status=201)
 
 class WishlistItemDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def delete(self, request, item_id):
         wishlist = Wishlist.objects.filter(user=request.user).first()

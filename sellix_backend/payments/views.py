@@ -108,8 +108,11 @@ class VerifyPaymentView(APIView):
 
         if not hmac.compare_digest(expected, d["razorpay_signature"]):
             rp.status = "failed"
+            rp.order.payment_status = "Failed"
             rp.error_description = "Signature mismatch"
             rp.save(update_fields=["status", "error_description"])
+            rp.order.payment_status = "Failed"
+            rp.order.save(update_fields=["payment_status"])
             return Response({"detail": "Invalid signature."}, status=400)
 
         # Fetch full payment details from Razorpay
@@ -139,7 +142,8 @@ class VerifyPaymentView(APIView):
 
         # Advance order status
         rp.order.status = "Processing"
-        rp.order.save(update_fields=["status"])
+        rp.order.payment_status = "Paid"
+        rp.order.save(update_fields=["status", "payment_status"])
 
         return Response(PaymentDetailSerializer(rp).data)
 
@@ -186,7 +190,8 @@ class RazorpayWebhookView(APIView):
             rp.status = "paid"
             rp.paid_at = timezone.now()
             rp.order.status = "Processing"
-            rp.order.save(update_fields=["status"])
+            rp.order.payment_status = "Paid"
+            rp.order.save(update_fields=["status", "payment_status"])
 
         elif name == "payment.failed":
             rp.status = "failed"
@@ -196,7 +201,8 @@ class RazorpayWebhookView(APIView):
             rp.error_step = entity.get("error_step")
             rp.error_reason = entity.get("error_reason")
             rp.order.status = "Cancelled"
-            rp.order.save(update_fields=["status"])
+            rp.order.payment_status = "Failed"
+            rp.order.save(update_fields=["status", "payment_status"])
 
         elif name == "refund.created":
             refund = event.get("payload", {}).get("refund", {}).get("entity", {})

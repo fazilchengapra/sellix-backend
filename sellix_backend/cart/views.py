@@ -5,11 +5,11 @@ from rest_framework import status
 from .models import CartItem
 from products.models import Product, ProductSize, ProductColor
 from .serializers import CartItemSerializer
-from rest_framework.permissions import IsAuthenticated
+from common.permissions import IsNormalUser
 
 
 class CartView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def get(self, request):
         print("data is :", request.user)
@@ -79,7 +79,7 @@ class CartView(APIView):
 
 
 class CartDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def patch(self, request, pk):
         print("Updating cart item", pk, "with data", request.data)
