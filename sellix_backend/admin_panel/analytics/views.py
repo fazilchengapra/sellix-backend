@@ -1,18 +1,26 @@
 from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
+from django.db.models.functions import TruncDate
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from orders.models import Order, OrderItem
-import decimal
-from django.db.models.functions import TruncDate
-from django.utils import timezone
 from datetime import timedelta
+import decimal
 
 
 class SalesAnalyticsView(APIView):
     def get(self, request):
-        total_orders = Order.objects.count()
+        days_map = {"7": 7, "30": 30, "90": 90}
+        days = days_map.get(request.query_params.get("days", "30"), 30)
+        start_date = timezone.now() - timedelta(days=days)
 
-        items_subtotal = OrderItem.objects.aggregate(
+        orders = Order.objects.filter(created_at__gte=start_date)
+        order_items = OrderItem.objects.filter(order__created_at__gte=start_date)
+
+        # --- Sales Summary ---
+        total_orders = orders.count()
+
+        items_subtotal = order_items.aggregate(
             subtotal=Sum(
                 ExpressionWrapper(
                     F("price") * F("quantity"),
@@ -21,7 +29,7 @@ class SalesAnalyticsView(APIView):
             )
         )["subtotal"] or decimal.Decimal("0")
 
-        total_shipping = Order.objects.aggregate(shipping=Sum("shipping"))[
+        total_shipping = orders.aggregate(shipping=Sum("shipping"))[
             "shipping"
         ] or decimal.Decimal("0")
 
@@ -32,19 +40,9 @@ class SalesAnalyticsView(APIView):
             else decimal.Decimal("0")
         )
 
-        return Response(
-            {
-                "totalRevenue": float(total_revenue),
-                "totalOrders": total_orders,
-                "avgOrderValue": float(avg_order_value),
-            }
-        )
-
-
-class RevenueTrendView(APIView):
-    def get(self, request):
+        # --- Revenue Trend ---
         trends = (
-            OrderItem.objects.annotate(date=TruncDate("order__created_at"))
+            order_items.annotate(date=TruncDate("order__created_at"))
             .values("date")
             .annotate(
                 revenue=Sum(
@@ -57,15 +55,14 @@ class RevenueTrendView(APIView):
             .order_by("date")
         )
 
-        # Add shipping per date
         shipping_by_date = (
-            Order.objects.annotate(date=TruncDate("created_at"))
+            orders.annotate(date=TruncDate("created_at"))
             .values("date")
             .annotate(shipping=Sum("shipping"))
         )
         shipping_map = {s["date"]: s["shipping"] for s in shipping_by_date}
 
-        data = [
+        revenue_trend = [
             {
                 "date": entry["date"].strftime("%b %d"),
                 "revenue": float(
@@ -76,18 +73,9 @@ class RevenueTrendView(APIView):
             for entry in trends
         ]
 
-        return Response(data)
-
-
-class SalesByCategoryView(APIView):
-    def get(self, request):
-        days_map = {"7": 7, "30": 30, "90": 90}
-        days = days_map.get(request.query_params.get("days", "30"), 30)
-        start_date = timezone.now() - timedelta(days=days)
-
-        data = (
-            OrderItem.objects.filter(order__created_at__gte=start_date)
-            .values(category=F("product__category"))
+        # --- Sales by Category ---
+        sales_by_category = (
+            order_items.values(category=F("product__category"))
             .annotate(
                 value=Sum(
                     ExpressionWrapper(
@@ -99,40 +87,14 @@ class SalesByCategoryView(APIView):
             .order_by("-value")
         )
 
-        return Response(
-            [
-                {
-                    "name": entry["category"] or "Uncategorized",
-                    "value": float(entry["value"] or decimal.Decimal("0")),
-                }
-                for entry in data
-            ]
+        # --- Order Status ---
+        order_status = (
+            orders.values("status").annotate(value=Count("id")).order_by("-value")
         )
 
-
-class OrderStatusView(APIView):
-    def get(self, request):
-        data = (
-            Order.objects.values("status")
-            .annotate(value=Count("id"))
-            .order_by("-value")
-        )
-
-        return Response(
-            [
-                {
-                    "name": entry["status"],
-                    "value": entry["value"],
-                }
-                for entry in data
-            ]
-        )
-
-
-class TopSellingProductsView(APIView):
-    def get(self, request):
-        data = (
-            OrderItem.objects.values(name=F("product_name"))
+        # --- Top 5 Selling Products ---
+        top_products = (
+            order_items.values(name=F("product_name"))
             .annotate(
                 sales=Sum("quantity"),
                 revenue=Sum(
@@ -146,12 +108,34 @@ class TopSellingProductsView(APIView):
         )
 
         return Response(
-            [
-                {
-                    "name": entry["name"],
-                    "sales": entry["sales"] or 0,
-                    "revenue": float(entry["revenue"] or decimal.Decimal("0")),
-                }
-                for entry in data
-            ]
+            {
+                "summary": {
+                    "totalRevenue": float(total_revenue),
+                    "totalOrders": total_orders,
+                    "avgOrderValue": float(avg_order_value),
+                },
+                "revenueTrend": revenue_trend,
+                "salesByCategory": [
+                    {
+                        "name": entry["category"] or "Uncategorized",
+                        "value": float(entry["value"] or decimal.Decimal("0")),
+                    }
+                    for entry in sales_by_category
+                ],
+                "orderStatus": [
+                    {
+                        "name": entry["status"],
+                        "value": entry["value"],
+                    }
+                    for entry in order_status
+                ],
+                "topProducts": [
+                    {
+                        "name": entry["name"],
+                        "sales": entry["sales"] or 0,
+                        "revenue": float(entry["revenue"] or decimal.Decimal("0")),
+                    }
+                    for entry in top_products
+                ],
+            }
         )
