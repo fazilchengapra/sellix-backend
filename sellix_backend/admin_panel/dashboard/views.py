@@ -12,29 +12,80 @@ from django.db.models.functions import TruncDate
 from django.db.models import Count
 from django.db.models import ExpressionWrapper, DecimalField
 from rest_framework import status
+from django.db.models import Q
 
 
 class DashboardView(APIView):
     def get(self, req):
 
+        # --- Summary Stats ---
         revenue_data = OrderItem.objects.filter(order__payment_status="Paid").aggregate(
             revenue=Sum(F("price") * F("quantity"))
         )
-
-        revenue = revenue_data["revenue"] or 0
-        orders = Order.objects.count()
-        products = Product.objects.count()
-        users = User.objects.count()
-
         data = {
-            "revenue": revenue,
-            "orders": orders,
-            "products": products,
-            "users": users,
+            "revenue": revenue_data["revenue"] or 0,
+            "orders": Order.objects.count(),
+            "products": Product.objects.count(),
+            "users": User.objects.count(),
         }
+        summary = DashboardSerializer(data).data
 
-        serializer = DashboardSerializer(data)
-        return Response(serializer.data)
+        # --- Top 5 Customers ---
+        top_customers = (
+            User.objects.filter(role="customer")
+            .annotate(
+                totalOrders=Count("orders", distinct=True),
+                totalSpent=Sum(
+                    ExpressionWrapper(
+                        F("order_items__price") * F("order_items__quantity"),
+                        output_field=DecimalField(),
+                    ),
+                    filter=Q(orders__payment_status="Paid"),
+                ),
+            )
+            .filter(totalOrders__gt=0)
+            .order_by("-totalSpent")[:5]
+            .values("id", "name", "email", "totalOrders", "totalSpent")
+        )
+
+        # --- Recent 5 Orders ---
+        recent_orders = (
+            Order.objects.annotate(
+                total=Sum(
+                    ExpressionWrapper(
+                        F("items__price") * F("items__quantity"),
+                        output_field=DecimalField(),
+                    )
+                )
+            )
+            .order_by("-created_at")[:5]
+            .values("id", "total", "created_at", "status")
+        )
+
+        return Response(
+            {
+                "summary": summary,
+                "topCustomers": [
+                    {
+                        "id": u["id"],
+                        "name": u["name"],
+                        "email": u["email"],
+                        "totalOrders": u["totalOrders"],
+                        "totalSpent": float(u["totalSpent"] or 0),
+                    }
+                    for u in top_customers
+                ],
+                "recentOrders": [
+                    {
+                        "id": o["id"],
+                        "total": float(o["total"] or 0),
+                        "createdAt": o["created_at"],
+                        "status": o["status"],
+                    }
+                    for o in recent_orders
+                ],
+            }
+        )
 
 
 class OrdersOverview(APIView):
