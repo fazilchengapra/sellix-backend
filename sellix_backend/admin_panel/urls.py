@@ -2,4 +2,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("dashboard/", include("admin_panel.dashboard.urls")),
+    path("analytics/", include("admin_panel.analytics.urls")),
 ]
