@@ -42,6 +42,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_CHOICES[0][0])
     is_verified = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
     
     objects = UserManager()
 
