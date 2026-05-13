@@ -23,13 +23,12 @@ class ProductSize(models.Model):
     size = models.IntegerField()
     stock = models.PositiveIntegerField()
 
-
 class ProductColor(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="colors")
     color_name = models.CharField(max_length=50)
     hex = models.CharField(max_length=7)
-
-
+    
+    
 class ProductImage(models.Model):
     color = models.ForeignKey(ProductColor, on_delete=models.CASCADE, related_name="images")
     image = models.URLField()
