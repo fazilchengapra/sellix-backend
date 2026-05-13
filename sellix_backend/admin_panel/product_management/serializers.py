@@ -24,15 +24,16 @@ class ProductColorReadSerializer(serializers.ModelSerializer):
 class ProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductSize
-        fields = ["id", "size", "stock"]
+        fields = ["size", "stock"]
 
 
 class ProductListSerializer(serializers.ModelSerializer):
     colors = ProductColorReadSerializer(many=True, read_only=True)
+    sizes = ProductSizeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
-        fields = ["id", "name", "brand", "category", "price", "discount", "colors"]
+        fields = ["id", "name", "brand", "category", "price", "discount", "colors", "sizes"]
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -172,7 +173,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     # ── Create ──────────────────────────────────────────────────────
 
     def create(self, validated_data):
-        sizes_data = validated_data.pop("sizes")  # already a parsed list
+        sizes_data = validated_data.pop("sizes")
         colors_data = validated_data.pop("colors")  # already a parsed list
         request = self.context["request"]
 

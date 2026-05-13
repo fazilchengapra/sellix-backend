@@ -23,7 +23,7 @@ import json
 
 class ProductListView(ListAPIView):
     queryset = (
-        Product.objects.prefetch_related("colors__images")
+        Product.objects.prefetch_related("colors__images", "sizes")
         .all()
         .filter(is_deleted=False)
     )
