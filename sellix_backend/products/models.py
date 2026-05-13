@@ -10,6 +10,7 @@ class Product(models.Model):
     ratings = models.FloatField(default=0)
     reviews_count = models.PositiveIntegerField(default=0)
     category = models.CharField(max_length=100)
+    is_deleted = models.BooleanField(default=False)
 
     def final_price(self):
         return self.price - (self.price * self.discount / 100)

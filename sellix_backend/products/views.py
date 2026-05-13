@@ -13,7 +13,7 @@ from .filters import ProductFilter
 
 
 class ProductListView(ListAPIView):
-    queryset = Product.objects.all().prefetch_related("sizes", "colors__images")
+    queryset = Product.objects.all().prefetch_related("sizes", "colors__images").filter(is_deleted=False)
     serializer_class = ProductSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter]
@@ -43,6 +43,6 @@ class ProductListView(ListAPIView):
 
 
 class ProductDetailView(RetrieveAPIView):
-    queryset = Product.objects.all().prefetch_related("sizes", "colors__images")
+    queryset = Product.objects.all().prefetch_related("sizes", "colors__images").filter(is_deleted=False)
     serializer_class = ProductSerializer
     lookup_field = "id"

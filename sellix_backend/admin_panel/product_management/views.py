@@ -9,7 +9,7 @@ from .serializers import (
     ProductCreateSerializer,
     ProductListSerializer,
     ProductDetailSerializer,
-    ProductUpdateSerializer
+    ProductUpdateSerializer,
 )
 from .pagination import ProductPagination
 from .filters import ProductFilter
@@ -22,7 +22,11 @@ import json
 
 
 class ProductListView(ListAPIView):
-    queryset = Product.objects.prefetch_related("colors__images").all()
+    queryset = (
+        Product.objects.prefetch_related("colors__images")
+        .all()
+        .filter(is_deleted=False)
+    )
     serializer_class = ProductListSerializer
     pagination_class = ProductPagination
 
@@ -53,11 +57,6 @@ class ProductListView(ListAPIView):
 class ProductCreateView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
-    # def get(self, request):
-    #     products = Product.objects.prefetch_related("colors__images", "sizes").all()
-    #     serializer = ProductListSerializer(products, many=True)
-    #     return Response(serializer.data)
-
     def post(self, request):
         serializer = ProductCreateSerializer(
             data=request.data,
@@ -82,7 +81,7 @@ class ProductUpdateView(APIView):
     def get_object(self, pk):
         try:
             return Product.objects.prefetch_related("colors__images", "sizes").get(
-                pk=pk
+                pk=pk, is_deleted=False
             )
         except Product.DoesNotExist:
             return None
@@ -109,3 +108,23 @@ class ProductUpdateView(APIView):
             ProductDetailSerializer(product).data,
             status=status.HTTP_200_OK,
         )
+
+
+class ProductDeleteView(APIView):
+    def delete(self, request, pk):
+
+        try:
+            product = Product.objects.get(pk=pk, is_deleted=False)
+        except Product.DoesNotExist:
+            return Response(
+                {"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        if not product:
+            return Response(
+                {"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        product.is_deleted = True
+        product.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
