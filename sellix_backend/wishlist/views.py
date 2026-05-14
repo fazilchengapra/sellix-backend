@@ -6,7 +6,7 @@ from .models import Wishlist, WishlistItem
 from .serializers import WishlistSerializer, WishlistItemSerializer
 from products.models import Product
 from common.permissions import IsNormalUser
-
+from drf_spectacular.utils import extend_schema
 
 class WishlistView(APIView):
     permission_classes = [IsNormalUser]
@@ -14,12 +14,22 @@ class WishlistView(APIView):
     def get_wishlist(self, user):
         wishlist, _ = Wishlist.objects.get_or_create(user=user)
         return wishlist
-
+    
+    @extend_schema(
+        request=None,
+        responses=WishlistSerializer,
+        tags=["Wishlist"],
+    )
     def get(self, request):
         wishlist = self.get_wishlist(request.user)
         serializer = WishlistSerializer(wishlist)
         return Response(serializer.data)
 
+    @extend_schema(
+        request=WishlistItemSerializer,
+        responses=WishlistItemSerializer,
+        tags=["Wishlist"],
+    )
     def post(self, request):
         """Add a product to wishlist"""
         wishlist = self.get_wishlist(request.user)
@@ -41,6 +51,11 @@ class WishlistView(APIView):
 class WishlistItemDeleteView(APIView):
     permission_classes = [IsNormalUser]
 
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["Wishlist"],
+    )
     def delete(self, request, item_id):
         wishlist = Wishlist.objects.filter(user=request.user).first()
         if not wishlist:

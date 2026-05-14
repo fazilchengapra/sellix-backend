@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from orders.models import Order
 from .models import RazorpayPayment
@@ -19,13 +20,14 @@ from .serializers import (
 
 
 class InitiatePaymentView(APIView):
-    """
-    POST /payments/initiate/
-    Creates a Razorpay order and stores a RazorpayPayment row.
-    """
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=InitiatePaymentSerializer,
+        responses=PaymentDetailSerializer,
+        tags=["Payments"],
+    )
     def post(self, request):
         ser = InitiatePaymentSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
@@ -80,13 +82,14 @@ class InitiatePaymentView(APIView):
 
 
 class VerifyPaymentView(APIView):
-    """
-    POST /payments/verify/
-    Called by frontend after Razorpay modal success callback.
-    """
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=VerifyPaymentSerializer,
+        responses=PaymentDetailSerializer,
+        tags=["Payments"],
+    )
     def post(self, request):
         ser = VerifyPaymentSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
@@ -150,15 +153,15 @@ class VerifyPaymentView(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class RazorpayWebhookView(APIView):
-    """
-    POST /payments/webhook/
-    Async events from Razorpay (payment.captured, payment.failed, refund.created).
-    Must be exempt from CSRF. Validate using webhook secret, NOT the key secret.
-    """
 
     authentication_classes = []
     permission_classes = []
-
+    
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["Payments"],
+    )
     def post(self, request):
         payload = request.body
         signature = request.headers.get("X-Razorpay-Signature", "")

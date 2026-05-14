@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
 
 from .models import CartItem
 from products.models import Product, ProductSize, ProductColor
@@ -10,7 +11,12 @@ from common.permissions import IsNormalUser
 
 class CartView(APIView):
     permission_classes = [IsNormalUser]
-
+    
+    @extend_schema(
+        request=None,
+        responses=CartItemSerializer(many=True),
+        tags=["Cart"],
+    )
     def get(self, request):
         print("data is :", request.user)
         items = CartItem.objects.filter(user=request.user)
@@ -19,7 +25,12 @@ class CartView(APIView):
         total = sum(item.price * item.quantity for item in items)
 
         return Response({"items": serializer.data, "total": total}, status=200)
-
+    
+    @extend_schema(
+        request=CartItemSerializer,
+        responses={"message": str},
+        tags=["Cart"],
+    )
     def post(self, request):
         try:
 
@@ -81,6 +92,11 @@ class CartView(APIView):
 class CartDetailsView(APIView):
     permission_classes = [IsNormalUser]
 
+    @extend_schema(
+        request=CartItemSerializer,
+        responses={"message": str},
+        tags=["Cart"],
+    )
     def patch(self, request, pk):
         print("Updating cart item", pk, "with data", request.data)
 
@@ -104,6 +120,11 @@ class CartDetailsView(APIView):
 
         return Response({"message": "Updated"}, status=200)
 
+    @extend_schema(
+        request=None,
+        responses={"message": str},
+        tags=["Cart"],
+    )
     def delete(self, request, pk):
         try:
             item = CartItem.objects.get(id=pk, user=request.user)

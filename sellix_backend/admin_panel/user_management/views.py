@@ -7,6 +7,8 @@ from .serializers import UserSerializer
 from users.models import CustomUser as User
 from common.pagination import CommonPagination
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema
+from common.permissions import IsAdminUser
 
 
 def get_user_or_return_err(pk):
@@ -17,7 +19,12 @@ def get_user_or_return_err(pk):
 
 
 class UserListCreateView(APIView):
-
+    permission_classes = [IsAdminUser]
+    @extend_schema(
+        request=None,
+        responses=UserSerializer(many=True),
+        tags=["Admin Users"],
+    )
     def get(self, request):
         users = User.objects.filter(is_deleted=False)
         
@@ -42,11 +49,21 @@ class UserListCreateView(APIView):
 
 
 class UserRetrieveUpdateDeleteView(APIView):
-
+    permission_classes = [IsAdminUser]
+    @extend_schema(
+        request=None,
+        responses=UserSerializer,
+        tags=["Admin Users"],
+    )
     def get(self, request, pk):
         user = get_user_or_return_err(pk)
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=UserSerializer,
+        responses=UserSerializer,
+        tags=["Admin Users"],
+    )
     def put(self, request, pk):
         user = get_user_or_return_err(pk)
         serializer = UserSerializer(user, data=request.data)
@@ -54,6 +71,11 @@ class UserRetrieveUpdateDeleteView(APIView):
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response(UserSerializer(serializer.save()).data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=UserSerializer,
+        responses=UserSerializer,
+        tags=["Admin Users"],
+    )
     def patch(self, request, pk):
         user = get_user_or_return_err(pk)
         serializer = UserSerializer(user, data=request.data, partial=True)
@@ -61,6 +83,11 @@ class UserRetrieveUpdateDeleteView(APIView):
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response(UserSerializer(serializer.save()).data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["Admin Users"],
+    )
     def delete(self, request, pk):
         user = get_user_or_return_err(pk)
         user.is_deleted = True
@@ -68,6 +95,12 @@ class UserRetrieveUpdateDeleteView(APIView):
         return Response({"message": f"User {pk} deleted."}, status=status.HTTP_200_OK)
     
 class BlockUnblockUserView(APIView):
+    permission_classes = [IsAdminUser]
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["Admin Users"],
+    )
     def post(self, request, pk):
         user = get_user_or_return_err(pk)
         user.is_active = not user.is_active

@@ -85,7 +85,6 @@ class ForgotPasswordView(APIView):
             return Response(
                 {
                     "message": "Password reset link sent to your email.",
-                    "token-for-testing": str(reset_token.token),
                 },
                 status=status.HTTP_200_OK,
             )

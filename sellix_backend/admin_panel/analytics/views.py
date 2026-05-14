@@ -6,9 +6,72 @@ from rest_framework.response import Response
 from orders.models import Order, OrderItem
 from datetime import timedelta
 import decimal
+from drf_spectacular.utils import extend_schema
+from common.permissions import IsAdminUser
 
 
 class SalesAnalyticsView(APIView):
+    permission_classes = [IsAdminUser]
+    @extend_schema(
+        request=None,
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "summary": {
+                        "type": "object",
+                        "properties": {
+                            "totalRevenue": {"type": "number"},
+                            "totalOrders": {"type": "integer"},
+                            "avgOrderValue": {"type": "number"},
+                        },
+                    },
+                    "revenueTrend": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "date": {"type": "string"},
+                                "revenue": {"type": "number"},
+                            },
+                        },
+                    },
+                    "salesByCategory": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "value": {"type": "number"},
+                            },
+                        },
+                    },
+                    "orderStatus": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "value": {"type": "integer"},
+                            },
+                        },
+                    },
+                    "topProducts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "sales": {"type": "integer"},
+                                "revenue": {"type": "number"},
+                            },
+                        },
+                    },
+                },
+            }
+        },
+        tags=["Admin Analytics"],
+    )
     def get(self, request):
         days_map = {"7": 7, "30": 30, "90": 90}
         days = days_map.get(request.query_params.get("days", "30"), 30)

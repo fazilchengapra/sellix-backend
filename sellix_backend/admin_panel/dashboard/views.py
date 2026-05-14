@@ -13,9 +13,18 @@ from django.db.models import Count
 from django.db.models import ExpressionWrapper, DecimalField
 from rest_framework import status
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema
+from common.permissions import IsAdminUser
 
 
 class DashboardView(APIView):
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        request=None,
+        responses=DashboardSerializer,
+        tags=["Admin Dashboard"],
+    )
     def get(self, req):
 
         # --- Summary Stats ---
@@ -26,7 +35,9 @@ class DashboardView(APIView):
             "revenue": revenue_data["revenue"] or 0,
             "orders": Order.objects.count(),
             "products": Product.objects.count(),
-            "users": User.objects.filter(is_active=True, is_deleted=False, is_staff=False).count(),
+            "users": User.objects.filter(
+                is_active=True, is_deleted=False, is_staff=False
+            ).count(),
         }
         summary = DashboardSerializer(data).data
 
@@ -89,6 +100,24 @@ class DashboardView(APIView):
 
 
 class OrdersOverview(APIView):
+    permission_classes = [IsAdminUser]
+    @extend_schema(
+        request=None,
+        responses={
+            200: {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "date": {"type": "string"},
+                        "revenue": {"type": "number"},
+                        "orders": {"type": "integer"},
+                    },
+                },
+            }
+        },
+        tags=["Admin Dashboard"],
+    )
     def get(self, request):
         days = int(request.query_params.get("days", 7))
 

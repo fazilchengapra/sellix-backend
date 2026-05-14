@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Product
 from .serializers import ProductSerializer
+from drf_spectacular.utils import extend_schema
 
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView

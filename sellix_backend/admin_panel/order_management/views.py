@@ -8,6 +8,8 @@ from orders.models import Order
 from .serializers import OrderListSerializer, OrderDetailSerializer
 from common.pagination import CommonPagination
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema
+from common.permissions import IsAdminUser
 
 
 def get_order_or_404(pk):
@@ -18,7 +20,12 @@ def get_order_or_404(pk):
 
 
 class AdminOrderListView(APIView):
-
+    permission_classes = [IsAdminUser]
+    @extend_schema(
+        request=None,
+        responses=OrderListSerializer(many=True),
+        tags=["Admin Orders"],
+    )
     def get(self, request):
         orders = (
             Order.objects.select_related("user")
@@ -53,13 +60,24 @@ class AdminOrderListView(APIView):
 
 
 class AdminOrderDetailView(APIView):
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
+    @extend_schema(
+        request=None,
+        responses=OrderDetailSerializer,
+        tags=["Admin Orders"],
+    )
     def get(self, request, pk):
         return Response(
             OrderDetailSerializer(get_order_or_404(pk)).data
         )
-
+        
+    @extend_schema(
+        request=OrderDetailSerializer,
+        responses=OrderDetailSerializer,
+        operation_id="AdminUpdateOrder",
+        tags=["Admin Orders"],
+    )
     def patch(self, request, pk):
         if request.data == {}:
             return Response(
@@ -106,7 +124,12 @@ class AdminOrderDetailView(APIView):
         order.save()
 
         return Response(OrderDetailSerializer(order).data)
-
+    
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["Admin Orders"],
+    )
     def delete(self, request, pk):
         order = get_order_or_404(pk)
         order.is_deleted = True
