@@ -64,8 +64,6 @@ class VerifyAccountSerializer(serializers.Serializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        
-        print(self.user)
 
         if not self.user.is_verified:
             raise serializers.ValidationError(

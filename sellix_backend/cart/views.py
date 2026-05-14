@@ -18,7 +18,6 @@ class CartView(APIView):
         tags=["Cart"],
     )
     def get(self, request):
-        print("data is :", request.user)
         items = CartItem.objects.filter(user=request.user)
         serializer = CartItemSerializer(items, many=True)
 
@@ -98,7 +97,6 @@ class CartDetailsView(APIView):
         tags=["Cart"],
     )
     def patch(self, request, pk):
-        print("Updating cart item", pk, "with data", request.data)
 
         try:
             item = CartItem.objects.get(id=pk, user=request.user)

@@ -39,6 +39,5 @@ class UserMeViewSet(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            print(serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
