@@ -18,9 +18,6 @@ def get_order_or_404(pk):
 
 
 class AdminOrderListView(APIView):
-    """
-    GET /api/admin/orders/   → List all orders
-    """
 
     def get(self, request):
         orders = (
@@ -38,6 +35,16 @@ class AdminOrderListView(APIView):
                 Q(user__email__icontains=search) |
                 Q(id__icontains=search)
             )
+            
+        filter_status = request.query_params.get('status')
+        if filter_status:
+            valid_statuses = [s[0] for s in Order.STATUS_CHOICES]
+            if filter_status not in valid_statuses:
+                return Response(
+                    {"error": "Invalid status filter"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            orders = orders.filter(status=filter_status)
         
         pagenator = CommonPagination()
         paginated_orders = pagenator.paginate_queryset(orders, request)
