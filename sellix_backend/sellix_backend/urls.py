@@ -21,11 +21,12 @@ from django.urls import path, include
 urlpatterns = [
     path("api/auth/", include("accounts.urls")),
     path("api/user/", include("users.urls")),
-    path('api/products/', include('products.urls')),
-    path('api/cart/', include('cart.urls')),
-    path('api/orders/', include('orders.urls')),
-    path('api/wishlist/', include('wishlist.urls')),
+    path("api/products/", include("products.urls")),
+    path("api/cart/", include("cart.urls")),
+    path("api/orders/", include("orders.urls")),
+    path("api/wishlist/", include("wishlist.urls")),
     path("api/payments/", include("payments.urls")),
-    path('api/admin/', include('admin_panel.urls')),
+    path("api/admin/orders/", include("admin_panel.order_management.urls")),
+    path("api/admin/", include("admin_panel.urls")),
     path("admin/", admin.site.urls),
 ]

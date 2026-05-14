@@ -26,13 +26,13 @@ class DashboardView(APIView):
             "revenue": revenue_data["revenue"] or 0,
             "orders": Order.objects.count(),
             "products": Product.objects.count(),
-            "users": User.objects.count(),
+            "users": User.objects.filter(is_active=True, is_deleted=False, is_staff=False).count(),
         }
         summary = DashboardSerializer(data).data
 
         # --- Top 5 Customers ---
         top_customers = (
-            User.objects.filter(role="customer")
+            User.objects.filter(role="customer", is_active=True, is_deleted=False)
             .annotate(
                 totalOrders=Count("orders", distinct=True),
                 totalSpent=Sum(
