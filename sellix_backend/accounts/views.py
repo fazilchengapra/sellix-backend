@@ -20,10 +20,17 @@ from .models import EmailVerificationToken
 from .utils import send_verification_email
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+from drf_spectacular.utils import extend_schema
 
 
 # Create your views here.
 class RegisterViewSet(APIView):
+    
+    @extend_schema(
+        request=CustomUserSerializer,
+        responses=CustomUserSerializer,
+        tags=["User"],
+    )
     def post(self, req):
         serializer = CustomUserSerializer(data=req.data)
         if serializer.is_valid():
@@ -42,7 +49,12 @@ class RegisterViewSet(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-
+    
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["User"],
+    )
     def post(self, request):
         print("refresh token is :", request.data.get("refresh"))
         # Blacklist the refresh token
@@ -58,6 +70,11 @@ class LogoutView(APIView):
 
 # take email and perform operation
 class ForgotPasswordView(APIView):
+    @extend_schema(
+        request=ForgotPasswordSerializer,
+        responses=None,
+        tags=["User"],
+    )
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -94,6 +111,11 @@ class ForgotPasswordView(APIView):
 
 # Step 2: User clicks link → validate token → set new password
 class ResetPasswordView(APIView):
+    @extend_schema(
+        request=ResetPasswordSerializer,
+        responses=None,
+        tags=["User"],
+    )
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -135,6 +157,11 @@ class ResetPasswordView(APIView):
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=ChangePasswordSerializer,
+        responses=None,
+        tags=["User"],
+    )
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -164,6 +191,11 @@ class ChangePasswordView(APIView):
 class VerifyAccountView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=None,
+        responses=None,
+        tags=["User"],
+    )
     def post(self, request):
         serializer = VerifyAccountSerializer(
             data=request.data, context={"request": request}
