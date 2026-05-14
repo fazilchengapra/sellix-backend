@@ -5,6 +5,8 @@ from rest_framework import status
 from rest_framework.exceptions import NotFound
 from .serializers import UserSerializer
 from users.models import CustomUser as User
+from common.pagination import CommonPagination
+from django.db.models import Q
 
 
 def get_user_or_return_err(pk):
@@ -18,8 +20,18 @@ class UserListCreateView(APIView):
 
     def get(self, request):
         users = User.objects.filter(is_deleted=False)
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        search = request.query_params.get('search', '')
+        if search:
+            users = users.filter(
+                Q(name__icontains=search) |
+                Q(email__icontains=search)
+            )
+        
+        pagenator = CommonPagination()
+        paginated_users = pagenator.paginate_queryset(users, request)
+        serializer = UserSerializer(paginated_users, many=True)
+        return pagenator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)

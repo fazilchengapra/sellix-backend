@@ -11,7 +11,7 @@ from .serializers import (
     ProductDetailSerializer,
     ProductUpdateSerializer,
 )
-from .pagination import ProductPagination
+from common.pagination import CommonPagination
 from .filters import ProductFilter
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
@@ -28,7 +28,7 @@ class ProductListView(ListAPIView):
         .filter(is_deleted=False)
     )
     serializer_class = ProductListSerializer
-    pagination_class = ProductPagination
+    pagination_class = CommonPagination
 
     filter_backends = [
         DjangoFilterBackend,
