@@ -156,3 +156,31 @@ class OrderDetailView(APIView):
         return Response(
             {"message": "Order cancelled successfully."}, status=status.HTTP_200_OK
         )
+
+class OrderCancelView(APIView):
+    permission_classes = [IsNormalUser]
+
+    @extend_schema(
+        request=None,
+        responses={"message": str},
+        tags=["Orders"],
+    )
+    def post(self, request, order_id):
+        """Cancel order — only if Pending"""
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+        except Order.DoesNotExist:
+            return Response(
+                {"error": f"Order with id {order_id} not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if order.status != "Pending":
+            return Response(
+                {"error": "Only Pending orders can be cancelled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        order.status = "Cancelled"
+        order.save()
+        return Response(
+            {"message": "Order cancelled successfully."}, status=status.HTTP_200_OK
+        )
