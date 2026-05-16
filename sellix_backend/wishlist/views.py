@@ -8,13 +8,16 @@ from products.models import Product
 from common.permissions import IsNormalUser
 from drf_spectacular.utils import extend_schema
 
+
 class WishlistView(APIView):
     permission_classes = [IsNormalUser]
 
     def get_wishlist(self, user):
-        wishlist, _ = Wishlist.objects.get_or_create(user=user)
-        return wishlist
-    
+        try:
+            return Wishlist.objects.get(user=user)
+        except Wishlist.DoesNotExist:
+            return Wishlist.objects.create(user=user)
+
     @extend_schema(
         request=None,
         responses=WishlistSerializer,
@@ -40,13 +43,18 @@ class WishlistView(APIView):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=404)
 
-        item, created = WishlistItem.objects.get_or_create(
-            wishlist=wishlist, product=product
-        )
+        try:
+            item = WishlistItem.objects.get(wishlist=wishlist, product=product)
+            created = False
+        except WishlistItem.DoesNotExist:
+            item = WishlistItem.objects.create(wishlist=wishlist, product=product)
+            created = True
+            
         if not created:
             return Response({"message": "Already in wishlist"}, status=200)
 
         return Response(WishlistItemSerializer(item).data, status=201)
+
 
 class WishlistItemDeleteView(APIView):
     permission_classes = [IsNormalUser]

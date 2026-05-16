@@ -33,7 +33,16 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ["id", "name", "brand", "category", "price", "discount", "colors", "sizes"]
+        fields = [
+            "id",
+            "name",
+            "brand",
+            "category",
+            "price",
+            "discount",
+            "colors",
+            "sizes",
+        ]
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -66,21 +75,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
-    """
-    Accepts multipart/form-data matching exactly what the frontend sends:
-
-        name           → "Hello"
-        brand          → "Nike"
-        category       → "sports"
-        price          → 1000
-        discount       → 5
-        description    → "..."
-        sizes          → '[{"size": 40, "stock": 10}]'          (JSON string)
-        colors         → '[{"id":null,"color_name":"Black","hex":"#000000","existing_images":[]}]'
-        color_0_images → <File>   (files for first color)
-        color_1_images → <File>   (files for second color)
-        ...
-    """
 
     # Accept as plain strings; we parse + validate them manually
     sizes = serializers.CharField(required=False, default="[]")

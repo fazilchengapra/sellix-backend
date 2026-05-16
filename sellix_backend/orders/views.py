@@ -18,7 +18,6 @@ class OrderListCreateView(APIView):
         tags=["Orders"],
     )
     def get(self, request):
-        """Get all orders for logged in user"""
         orders = (
             Order.objects.filter(user=request.user)
             .prefetch_related("items")
@@ -82,6 +81,8 @@ class OrderListCreateView(APIView):
 
         # 6. Clear cart
         cart_items.delete()
+        
+        
 
         # 7. Return created order
         serializer = OrderSerializer(order)

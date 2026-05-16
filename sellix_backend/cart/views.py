@@ -85,7 +85,8 @@ class CartView(APIView):
 
             return Response({"message": "Added to cart"}, status=201)
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            print("cart error:",str(e))
+            return Response({"error": "something went wrong"}, status=500)
 
 
 class CartDetailsView(APIView):
