@@ -221,3 +221,37 @@ class VerifyAccountView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response({error:serializer.errors})
+        
+        access = serializer.validated_data['access']
+        refresh = serializer.validated_data['refresh']
+        
+        response = Response({"message":"Login success full"})
+
+        response.set_cookie(
+            key="access_token",
+            value=access,
+            httponly=True,
+            secure=False,
+            samesite='Lax',
+            max_age=60*15
+        )
+
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh,
+            httponly=True,
+            secure=False,
+            samesite='Lax',
+            max_age=60*60*24*7
+        )
+
+        return response
