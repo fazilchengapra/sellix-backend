@@ -22,4 +22,4 @@ class CartItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
     
     class Meta:
-        unique_together = ("user", "product", "size", "color")
+        unique_together = ("user","guest_id","product", "size", "color")

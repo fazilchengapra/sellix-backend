@@ -1,24 +1,39 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
 from .models import CartItem
 from products.models import Product, ProductSize, ProductColor
 from .serializers import CartItemSerializer
-from common.permissions import IsNormalUser
+import uuid
 
 
 class CartView(APIView):
-    permission_classes = [IsNormalUser]
+    permission_classes = []
     
     @extend_schema(
         request=None,
         responses=CartItemSerializer(many=True),
         tags=["Cart"],
     )
+
+    def get_cart_selector(self, request, response):
+        if request.user.is_authenticated:
+            return {'user':request.user}
+        
+        guest_id = request.COOKIES.get('guest_id')
+        if not guest_id:
+            return None
+
+        return {'guest_id':guest_id}
+
     def get(self, request):
-        items = CartItem.objects.filter(user=request.user)
+        response = Response()
+        selector = self.get_cart_selector(request, response)
+        if selector is None:
+            return Response({"error":"something went wrong"}, status=400)
+
+        items = CartItem.objects.filter(**selector)
         serializer = CartItemSerializer(items, many=True)
 
         total = sum(item.price * item.quantity for item in items)
@@ -32,7 +47,7 @@ class CartView(APIView):
     )
     def post(self, request):
         try:
-
+            selector = self.get_cart_selector(request)
             product_id = request.data.get("product_id")
             size = request.data.get("size")
             color = request.data.get("color")
@@ -56,6 +71,7 @@ class CartView(APIView):
             color_obj = ProductColor.objects.filter(
                 product=product, color_name=color
             ).first()
+            print('color_obj', color_obj)
             image = None
 
             if color_obj and color_obj.images.exists():
@@ -63,7 +79,7 @@ class CartView(APIView):
 
             #  Prevent duplicate items
             item, created = CartItem.objects.get_or_create(
-                user=request.user,
+                **selector,
                 product=product,
                 size=size,
                 color=color,
@@ -90,7 +106,14 @@ class CartView(APIView):
 
 
 class CartDetailsView(APIView):
-    permission_classes = [IsNormalUser]
+
+    def get_cart_selector(self, request):
+        if request.user.is_authenticated:
+            return {'user':request.user}
+        
+        guest_id = request.COOKIES.get('guest_id')
+        return {'guest_id':guest_id}
+    
 
     @extend_schema(
         request=CartItemSerializer,
@@ -98,9 +121,9 @@ class CartDetailsView(APIView):
         tags=["Cart"],
     )
     def patch(self, request, pk):
-
+        selector = self.get_cart_selector(request)
         try:
-            item = CartItem.objects.get(id=pk, user=request.user)
+            item = CartItem.objects.get(id=pk, **selector)
         except CartItem.DoesNotExist:
             return Response({"error": "Cart item not found"}, status=404)
 
@@ -125,8 +148,9 @@ class CartDetailsView(APIView):
         tags=["Cart"],
     )
     def delete(self, request, pk):
+        selector = self.get_cart_selector(request)
         try:
-            item = CartItem.objects.get(id=pk, user=request.user)
+            item = CartItem.objects.get(id=pk, **selector)
         except CartItem.DoesNotExist:
             return Response({"error": "Cart item not found"}, status=404)
         item.delete()

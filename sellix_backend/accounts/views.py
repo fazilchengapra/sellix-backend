@@ -22,6 +22,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema
 
+import uuid
+
+#utils
+from .utils import mergeCart
+
 
 # Create your views here.
 class RegisterViewSet(APIView):
@@ -73,6 +78,16 @@ class LogoutView(APIView):
 
             response.delete_cookie("access_token")
             response.delete_cookie("refresh_token")
+
+            new_guest_id = uuid.uuid4()
+            response.set_cookie(
+                'guest_id',
+                new_guest_id,
+                max_age=7 * 24 * 60 * 60,  
+                httponly=True,             
+                samesite='Lax',            
+                secure=True
+            )
 
             return response
 
@@ -241,8 +256,15 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         
         access = serializer.validated_data['access']
         refresh = serializer.validated_data['refresh']
-        
-        response = Response({"message":"Login success full"})
+
+        guest_id = request.COOKIES.get('guest_id')
+        user = serializer.user
+
+        if guest_id:
+            mergeCart(user, guest_id)
+
+        response = Response({"message":"Login success full for test"})
+
 
         response.set_cookie(
             key="access_token",
@@ -261,6 +283,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             samesite='Lax',
             max_age=60*60*24*7
         )
+
+        response.delete_cookie('guest_id')
 
         return response
     
