@@ -5,7 +5,8 @@ from users.models import CustomUser as User
 
 
 class CartItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart_items")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart_items", null=True, blank=True)
+    guest_id = models.UUIDField(blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     product_name = models.CharField(max_length=255)
@@ -18,6 +19,7 @@ class CartItem(models.Model):
     color = models.CharField(max_length=50)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
     
     class Meta:
         unique_together = ("user", "product", "size", "color")

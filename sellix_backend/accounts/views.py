@@ -57,13 +57,25 @@ class LogoutView(APIView):
     )
     def post(self, request):
         # Blacklist the refresh token
-        try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=205)
-        except Exception as e:
-            return Response({"error": "Something went wrong"}, status=400)
+        refresh_token = request.COOKIES.get('refresh_token')
+        
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception as err:
+                print(err)
+                return Response({'message':"something went wrong."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            response = Response({
+                "message":"logout success!"
+            }, status=status.HTTP_200_OK)
+
+            response.delete_cookie("access_token")
+            response.delete_cookie("refresh_token")
+
+            return response
+
 
 
 # take email and perform operation
