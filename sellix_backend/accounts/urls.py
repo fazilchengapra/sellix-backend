@@ -1,14 +1,13 @@
 from django.shortcuts import render
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import RegisterViewSet, LogoutView
-from .views import ForgotPasswordView, ResetPasswordView, ChangePasswordView, VerifyAccountView
+from .views import ForgotPasswordView, ResetPasswordView, ChangePasswordView, VerifyAccountView, CookieTokenRefreshView
 from .views import CustomTokenObtainPairView
 
 # Create your views here.
 
 urlpatterns = [
-    path("refresh/token/", TokenRefreshView.as_view()),
+    path("refresh/token/", CookieTokenRefreshView.as_view()),
     path("login/", CustomTokenObtainPairView.as_view()),
     path("register/", RegisterViewSet.as_view()),
     path('logout/', LogoutView.as_view()),

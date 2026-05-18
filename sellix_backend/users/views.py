@@ -18,6 +18,7 @@ class UserMeViewSet(APIView):
         tags=["User"],
     )
     def get(self, request):
+        print(request.user)
         user = request.user
         serializer = CustomUserSerializer(user)
         return Response(serializer.data)

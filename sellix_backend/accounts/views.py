@@ -225,11 +225,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data=request.data)
-
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as e:
-            return Response({error:serializer.errors})
+        serializer.is_valid(raise_exception=True)
         
         access = serializer.validated_data['access']
         refresh = serializer.validated_data['refresh']
@@ -255,3 +251,28 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         )
 
         return response
+    
+class CookieTokenRefreshView(APIView):
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response({"error": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            new_access = str(refresh.access_token)
+
+            response = Response({"message": "Token refreshed"})
+            response.set_cookie(
+                key="access_token",
+                value=new_access,
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                max_age=60 * 15 
+            )
+            return response
+
+        except Exception:
+            return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
