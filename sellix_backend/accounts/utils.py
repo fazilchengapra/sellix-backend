@@ -13,12 +13,19 @@ def send_verification_email(user, token_obj):
         fail_silently=False,
     )
 
-def mergeCart(user, guest_id):
+def mergeCart(user, guest_id, is_sign_up = False):
     if not guest_id or not user:
         return
     
     guest_items = CartItem.objects.filter(guest_id=guest_id)
-
+    
+    if is_sign_up:
+        for guest_item in guest_items:
+            guest_item.user = user
+            guest_item.guest_id = None
+            guest_item.save()
+        return
+    
     for guest_item in guest_items:
         existing_item = CartItem.objects.filter(
             user=user,

@@ -43,14 +43,13 @@ class RegisterViewSet(APIView):
             verification_token = EmailVerificationToken.objects.create(user=user)
             send_verification_email(user, verification_token)
             return Response(
-                {
-                    "message": "User registered successfully. Please check your email to verify your account.",
-                    "token_for_testing": str(verification_token.token),
-                },
-                status=201,
-            )
+                    {
+                        "message": "User registered successfully. Please check your email to verify your account.",
+                        "token_for_testing": str(verification_token.token),
+                    },
+                    status=201,
+                )
         return Response(serializer.errors, status=400)
-
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -240,11 +239,16 @@ class VerifyAccountView(APIView):
         token_obj.is_used = True
         token_obj.save(update_fields=["is_used"])
 
-        return Response(
+        guest_id = request.COOKIES.get('guest_id')
+        mergeCart(user, guest_id=guest_id,is_sign_up=True)
+
+        response = Response(
             {"detail": "Account verified successfully. You can now log in."},
             status=status.HTTP_200_OK,
         )
 
+        response.delete_cookie('guest_id')
+        return response
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

@@ -17,7 +17,7 @@ class CartView(APIView):
         tags=["Cart"],
     )
 
-    def get_cart_selector(self, request, response):
+    def get_cart_selector(self, request):
         if request.user.is_authenticated:
             return {'user':request.user}
         
@@ -29,7 +29,7 @@ class CartView(APIView):
 
     def get(self, request):
         response = Response()
-        selector = self.get_cart_selector(request, response)
+        selector = self.get_cart_selector(request)
         if selector is None:
             return Response({"error":"something went wrong"}, status=400)
 
