@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "wishlist",
     "payments",
     "admin_panel",
+    "review"
 ]
 
 MIDDLEWARE = [
