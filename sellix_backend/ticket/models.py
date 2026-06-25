@@ -35,20 +35,21 @@ class Ticket(TimeStamped):
     ]
 
 
-    order_id = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, related_name='tickets')
-    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets')
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, related_name='tickets')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets')
     subject = models.CharField(max_length=70)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     assigned_to = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'is_staff':True}, related_name='assigned_tickets')
 
-class TicketMessages(TimeStamped):
+class TicketMessage(TimeStamped):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='ticket_messages')
     message = models.TextField()
     is_staff_reply = models.BooleanField(default=False)
 
 class TicketAttachment(TimeStamped):
-        message = models.ForeignKey(TicketMessages, on_delete=models.CASCADE, related_name='attachment')
+        message = models.ForeignKey(TicketMessage, on_delete=models.CASCADE, related_name='attachments')
         file_url = models.URLField()
+        cloudinary_public_id = models.CharField(max_length=255, blank=True)
