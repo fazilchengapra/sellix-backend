@@ -40,7 +40,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class VerifyAccountSerializer(serializers.Serializer):
     token = serializers.UUIDField()
-
+    
     def validate_token(self, value):
         try:
             token_obj = EmailVerificationToken.objects.select_related("user").get(

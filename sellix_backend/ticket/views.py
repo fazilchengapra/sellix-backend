@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializer import TicketSerializer, TicketMessageSerializer, TicketDetailedViewSerializer
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from common.permissions import IsNormalUser
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .models import Ticket, TicketMessage
 from django.db.models import Prefetch
@@ -19,7 +19,7 @@ def if_ticket_exist(ticket_id, user):
 
 # Create your views here.
 class TicketView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def post(self, request):
         serializer = TicketSerializer(data=request.data)
@@ -38,7 +38,7 @@ class TicketView(APIView):
         return Response({'message':'tickets fetched success!', 'data':serializer.data}, status=status.HTTP_200_OK)
     
 class TicketDetailedView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def get(self, request, ticket_id):
         ticket_detailed = if_ticket_exist(ticket_id, request.user)
@@ -63,7 +63,7 @@ class TicketDetailedView(APIView):
     
 class TicketReplyView(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
 
     def post(self, request, ticket_id):
@@ -79,17 +79,17 @@ class TicketReplyView(APIView):
     
 class TicketCloseView(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def patch(self, request, ticket_id):
 
         ticket = if_ticket_exist(ticket_id, request.user)
 
-        if ticket and ticket.status == 'close':
+        if ticket and ticket.status == 'closed':
             return Response({'message':'ticket is already closed!'}, status=status.HTTP_400_BAD_REQUEST)
 
         if ticket:
-            ticket.status='close'
+            ticket.status='closed'
             ticket.save(update_fields=['status'])
             serializer = TicketSerializer(ticket)
             return Response({'message':'ticket status updated success!', 'data':serializer.data}, status=status.HTTP_200_OK)
@@ -99,7 +99,7 @@ class TicketCloseView(APIView):
 
 class TicketReOpen(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsNormalUser]
 
     def patch(self, request, ticket_id):
 
