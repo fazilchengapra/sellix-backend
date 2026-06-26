@@ -2,8 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializer import TicketViewSerializer, TicketMessageSerializer
-from ticket.models import Ticket
+from ticket.models import Ticket, TicketMessage
 from common.permissions import IsAdminUser
+from ticket.serializer import TicketDetailedViewSerializer
+from django.db.models import Prefetch
 
 def is_ticket_is_valid(ticket_id):
     try:
@@ -64,3 +66,31 @@ class TicketResolveView(APIView):
         
         serializer = TicketViewSerializer(ticket)
         return Response({'message':'token status updated!', 'data':serializer.data}, status=status.HTTP_200_OK)
+    
+class TicketDetailedView(APIView):
+
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, ticket_id):
+
+        ticket = is_ticket_is_valid(ticket_id)
+
+        if not ticket:
+            return Response({'error':'No ticket found'}, status=status.HTTP_404_NOT_FOUND)
+        ticket = (
+            Ticket.objects
+            .select_related('order', 'user', 'assigned_to')   # FK forward joins
+            .prefetch_related(
+                Prefetch(
+                    'messages',
+                    queryset=TicketMessage.objects
+                        .select_related('sender')              # FK forward inside prefetch
+                        .prefetch_related('attachments')       # reverse FK from message
+                        .order_by('created_at')
+                )
+            )
+            .get(id=ticket_id)
+        )
+        serializer = TicketDetailedViewSerializer(ticket)
+
+        return Response({'message':'Ticket fetched success!', 'data':serializer.data}, status=status.HTTP_200_OK)

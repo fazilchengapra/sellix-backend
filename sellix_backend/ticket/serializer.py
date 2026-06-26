@@ -30,4 +30,4 @@ class TicketDetailedViewSerializer(serializers.ModelSerializer):
     messages = TicketMessageSerializer(many=True)
     class Meta:
         model = Ticket
-        fields = '__all__'
+        fields = ['order', 'subject', 'category', 'status', 'priority', 'messages']
