@@ -23,6 +23,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -33,6 +34,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "django_filters",
+    "channels",
+
     "accounts",
     "users",
     "products",
@@ -56,6 +59,14 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "cart.middleware.GuestCartMiddleware"
 ]
+
+ASGI_APPLICATION = 'sellix_backend.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
 
 ROOT_URLCONF = "sellix_backend.urls"
 

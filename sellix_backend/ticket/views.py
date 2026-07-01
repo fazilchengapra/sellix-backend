@@ -128,11 +128,11 @@ class TicketCloseView(APIView):
 
         ticket = is_ticket_exist(ticket_id, request.user)
 
-        if ticket and ticket.status == 'open':
-            return Response({'message':'ticket is already open!'}, status=status.HTTP_400_BAD_REQUEST)
+        if ticket and ticket.status == 'closed':
+            return Response({'message':'ticket is already closed!'}, status=status.HTTP_400_BAD_REQUEST)
 
         if ticket:
-            ticket.status='open'
+            ticket.status='closed'
             ticket.save(update_fields=['status'])
             serializer = TicketSerializer(ticket)
             return Response({'message':'ticket status updated success!', 'data':serializer.data}, status=status.HTTP_200_OK)
