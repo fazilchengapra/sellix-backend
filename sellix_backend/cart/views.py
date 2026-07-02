@@ -5,8 +5,6 @@ from drf_spectacular.utils import extend_schema
 from .models import CartItem
 from products.models import Product, ProductSize, ProductColor
 from .serializers import CartItemSerializer
-import uuid
-
 
 class CartView(APIView):
     permission_classes = []
