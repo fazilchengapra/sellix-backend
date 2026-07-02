@@ -7,6 +7,8 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .models import Ticket, TicketMessage
 from orders.models import Order
 from django.db.models import Prefetch
+import cloudinary.uploader
+import uuid
 
 
 def is_ticket_exist(ticket_id, user):
@@ -17,15 +19,6 @@ def is_ticket_exist(ticket_id, user):
             return False
         except Ticket.MultipleObjectsReturned:
             return False
-        
-def is_order_exist_and_valid(order_id, user):
-    try:
-        ticket = Order.objects.get(id=order_id, user=user)
-        return ticket
-    except Order.DoesNotExist:
-        return False
-    except Order.MultipleObjectsReturned:
-        return False
         
 category_choices = [
         'general',
@@ -41,9 +34,11 @@ order_id_needed_categories = [
         'order_issue'
     ]
 
-# Create your views here.
-class TicketView(APIView):
+class NormalUserAPIView(APIView):
     permission_classes = [IsNormalUser]
+
+# Create your views here.
+class TicketView(NormalUserAPIView):    
 
     def post(self, request):
         serializer = TicketSerializer(data=request.data)
@@ -60,7 +55,7 @@ class TicketView(APIView):
                     if not order_id:
                         return Response({'error':'No orderId provided'}, status=status.HTTP_400_BAD_REQUEST)
                     
-                    order = is_order_exist_and_valid(order_id, request.user)
+                    order = is_ticket_exist(order_id, request.user)
 
                     if not order:
                         return Response({'error':'Invalid orderId'}, status=status.HTTP_400_BAD_REQUEST)
@@ -79,8 +74,7 @@ class TicketView(APIView):
 
         return Response({'message':'tickets fetched success!', 'data':serializer.data}, status=status.HTTP_200_OK)
     
-class TicketDetailedView(APIView):
-    permission_classes = [IsNormalUser]
+class TicketDetailedView(NormalUserAPIView):    
 
     def get(self, request, ticket_id):
         ticket_detailed = is_ticket_exist(ticket_id, request.user)
@@ -103,11 +97,6 @@ class TicketDetailedView(APIView):
             serializer = TicketDetailedViewSerializer(ticket_detailed)
             return Response({'message':'tickets fetched success!', 'data':serializer.data}, status=status.HTTP_200_OK)
         return Response({'error':'ticket not found'}, status=status.HTTP_400_BAD_REQUEST)
-    
-class TicketReplyView(APIView):
-
-    permission_classes = [IsNormalUser]
-
 
     def post(self, request, ticket_id):
 
@@ -120,9 +109,8 @@ class TicketReplyView(APIView):
             return Response({'message':'message sent success', 'data':serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'message':'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
     
-class TicketCloseView(APIView):
-
-    permission_classes = [IsNormalUser]
+class TicketCloseView(NormalUserAPIView):
+    
 
     def patch(self, request, ticket_id):
 
@@ -140,9 +128,8 @@ class TicketCloseView(APIView):
         return Response({'message':'ticket status updated fail!'}, status=status.HTTP_400_BAD_REQUEST)
     
 
-class TicketReOpen(APIView):
-
-    permission_classes = [IsNormalUser]
+class TicketReOpen(NormalUserAPIView):
+    
 
     def patch(self, request, ticket_id):
 
@@ -158,3 +145,29 @@ class TicketReOpen(APIView):
             return Response({'message':'ticket status updated success!', 'data':serializer.data}, status=status.HTTP_200_OK)
         
         return Response({'message':'ticket status updated fail!'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class TicketAttachmentView(NormalUserAPIView):
+    def post(self, request, ticket_id):
+        
+        ticket = is_ticket_exist(ticket_id, request.user)
+
+        if not ticket:
+            return Response({'message':'Ticket not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        files = request.FILES.getlist('attachments')
+
+        attachments = []
+        for file in files:
+            result = cloudinary.uploader.upload(
+                file,
+                folder = 'tickets',
+                public_id = f"ticket_{ticket_id}_{uuid.uuid4().hex}",
+                resource_type = 'auto' 
+            )
+            res = {
+                "file_url":result['url'],
+                "cloudinary_public_id": result['public_id']
+            }
+            attachments.append(res)
+
+        return Response({'message':'image uploaded success', 'data':attachments}, status=status.HTTP_200_OK)

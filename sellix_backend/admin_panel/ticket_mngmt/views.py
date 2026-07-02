@@ -14,8 +14,12 @@ def is_ticket_is_valid(ticket_id):
         return None
     else:
         return ticket
-class TicketListView(APIView):
+    
+class AdminAPIView(APIView):
     permission_classes = [IsAdminUser]
+
+class TicketListView(AdminAPIView):
+    
     def get(self, request):
         ticket_status = request.query_params.get("status", None)
 
@@ -30,7 +34,7 @@ class TicketListView(APIView):
         serializer = TicketViewSerializer(queryset, many=True)
         return Response({'message':'ticket data fetched success', 'data':serializer.data}, status=status.HTTP_200_OK)
     
-class TicketMessageView(APIView):
+class TicketMessageView(AdminAPIView):
 
     def post(self, request, ticket_id):
 
@@ -52,7 +56,7 @@ class TicketMessageView(APIView):
             return Response({'message':'message sent success!', 'data':serializer.data}, status=status.HTTP_200_OK)
         return Response({'message':'message sent failed!', 'error':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
-class TicketResolveView(APIView):
+class TicketResolveView(AdminAPIView):
 
     def patch(self, request, ticket_id):
 
@@ -67,9 +71,7 @@ class TicketResolveView(APIView):
         serializer = TicketViewSerializer(ticket)
         return Response({'message':'token status updated!', 'data':serializer.data}, status=status.HTTP_200_OK)
     
-class TicketDetailedView(APIView):
-
-    permission_classes = [IsAdminUser]
+class TicketDetailedView(AdminAPIView):
 
     def get(self, request, ticket_id):
 
