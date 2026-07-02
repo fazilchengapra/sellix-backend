@@ -157,17 +157,23 @@ class TicketAttachmentView(NormalUserAPIView):
         files = request.FILES.getlist('attachments')
 
         attachments = []
-        for file in files:
-            result = cloudinary.uploader.upload(
-                file,
-                folder = 'tickets',
-                public_id = f"ticket_{ticket_id}_{uuid.uuid4().hex}",
-                resource_type = 'auto' 
-            )
-            res = {
-                "file_url":result['url'],
-                "cloudinary_public_id": result['public_id']
-            }
-            attachments.append(res)
+        try:
+            for file in files:
+                result = cloudinary.uploader.upload(
+                    file,
+                    folder = 'tickets',
+                    public_id = f"ticket_{ticket_id}_{uuid.uuid4().hex}",
+                    resource_type = 'auto' 
+                )
+                res = {
+                    "file_url":result['url'],
+                    "cloudinary_public_id": result['public_id']
+                }
+                attachments.append(res)
+        except Exception as e:
+            print(e)
+            return Response({
+                'error':"Image upload failed"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'message':'image uploaded success', 'data':attachments}, status=status.HTTP_200_OK)

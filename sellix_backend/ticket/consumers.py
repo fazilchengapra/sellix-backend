@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Ticket, TicketMessage
-
+from .models import TicketAttachment
 
 class TicketConsumer(AsyncWebsocketConsumer):
 
@@ -40,12 +40,13 @@ class TicketConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message_body = data.get("message", "").strip()
+        attachments = data.get("attachments", [])
 
         if not message_body:
             return
 
         user = self.scope["user"]
-        saved = await self.save_message(self.ticket_id, user, message_body)
+        saved = await self.save_message(self.ticket_id, user, message_body, attachments)
 
         # Broadcast to everyone in the group
         await self.channel_layer.group_send(
@@ -54,6 +55,7 @@ class TicketConsumer(AsyncWebsocketConsumer):
                 "type": "ticket.message",   # maps to ticket_message() below
                 "message_id": str(saved["id"]),
                 "message": saved["message"],
+                "attachments": saved['attachments'],
                 "sender_id": saved["sender_id"],
                 "sender_name": saved["sender_name"],
                 "is_staff_reply": saved["is_staff_reply"],
@@ -86,16 +88,26 @@ class TicketConsumer(AsyncWebsocketConsumer):
             return None
 
     @database_sync_to_async
-    def save_message(self, ticket_id, user, body):
+    def save_message(self, ticket_id, user, body, attachments):
         msg = TicketMessage.objects.create(
             ticket_id=ticket_id,
             sender=user,
             message=body,
             is_staff_reply =user.is_staff,
         )
+
+        TicketAttachment.objects.bulk_create(
+            [TicketAttachment(
+                message=msg,
+                file_url=item['file_url'],
+                cloudinary_public_id=item['cloudinary_public_id']
+                ) for item in attachments]
+            )
+
         return {
             "id": msg.id,
             "message": msg.message,
+            "attachments": attachments,
             "sender_id": user.id,
             "sender_name": user.get_full_name() or user.email,
             "is_staff_reply": msg.is_staff_reply,
