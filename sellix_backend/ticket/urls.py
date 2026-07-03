@@ -4,8 +4,8 @@ from .views.user import (
     TicketCloseView,
     TicketDetailedView,
     TicketReOpen,
-    TicketAttachmentView,
 )
+from .views.attachment import TicketAttachmentView
 
 urlpatterns = [
     path("", TicketView.as_view()),
