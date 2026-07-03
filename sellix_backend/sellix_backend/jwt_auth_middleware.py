@@ -35,6 +35,8 @@ class JWTCookieMiddleware(BaseMiddleware):
         # Get the access token — match your cookie name exactly
         token = cookies.get("access_token")
 
+        scope['cookies'] = cookies  # Store cookies in scope for later use
+        
         if token:
             scope["user"] = await get_user_from_token(token)
         else:

@@ -36,7 +36,8 @@ class Ticket(TimeStamped):
 
 
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, related_name='tickets')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets', blank=True, null=True)
+    guest_id = models.UUIDField(blank=True, null=True)
     subject = models.CharField(max_length=70)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')

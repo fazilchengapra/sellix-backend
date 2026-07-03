@@ -7,27 +7,29 @@ from ..serializer import (
 )
 from rest_framework import status
 from ..models import Ticket
-from ..selector import is_ticket_exist, get_ticket_detailed
+from ..selector import is_ticket_exist, get_ticket_detailed, get_user_selector
 from ..services.ticket_service import create_ticket
-from .base import NormalUserAPIView
+from .base import NormalUserAPIView, AllowedAnyUserAPIView
 
 
 # Create your views here.
-class TicketView(NormalUserAPIView):
+class TicketView(AllowedAnyUserAPIView):
 
     def post(self, request):
         serializer = TicketSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
+        user = get_user_selector(request)
 
-        create_ticket(serializer, request.user)
+        create_ticket(serializer, user)
 
         return Response(
             {"message": "Ticket raised success!"}, status=status.HTTP_200_OK
         )
 
     def get(self, request):
-        queryset = Ticket.objects.filter(user=request.user)
+        user = get_user_selector(request)
+        queryset = Ticket.objects.filter(**user)
         serializer = TicketSerializer(queryset, many=True)
 
         return Response(
@@ -36,11 +38,13 @@ class TicketView(NormalUserAPIView):
         )
 
 
-class TicketDetailedView(NormalUserAPIView):
+class TicketDetailedView(AllowedAnyUserAPIView):
 
     def get(self, request, ticket_id):
 
-        ticket_detailed = get_ticket_detailed(ticket_id, request.user)
+        user = get_user_selector(request)
+
+        ticket_detailed = get_ticket_detailed(ticket_id, user)
 
         if not ticket_detailed:
             return Response(
@@ -55,7 +59,9 @@ class TicketDetailedView(NormalUserAPIView):
 
     def post(self, request, ticket_id):
 
-        ticket = is_ticket_exist(ticket_id, request.user)
+        user = get_user_selector(request)
+
+        ticket = is_ticket_exist(ticket_id, user)
 
         if not ticket:
             return Response(
@@ -82,8 +88,8 @@ class TicketDetailedView(NormalUserAPIView):
 class TicketCloseView(NormalUserAPIView):
 
     def patch(self, request, ticket_id):
-
-        ticket = is_ticket_exist(ticket_id, request.user)
+        user_selector = get_user_selector(request)
+        ticket = is_ticket_exist(ticket_id, user_selector)
 
         if not ticket:
             return Response(
@@ -108,8 +114,8 @@ class TicketCloseView(NormalUserAPIView):
 class TicketReOpen(NormalUserAPIView):
 
     def patch(self, request, ticket_id):
-
-        ticket = is_ticket_exist(ticket_id, request.user)
+        user_selector = get_user_selector(request)
+        ticket = is_ticket_exist(ticket_id, user_selector)
 
         if ticket and ticket.status == "open":
             return Response(

@@ -3,9 +3,25 @@ from .models import TicketMessage
 from django.db.models import Prefetch
 
 
-def is_ticket_exist(ticket_id, user):
+def get_user_selector(request):
+    if request.user.is_authenticated:
+        return {"user": request.user}
+    else:
+        return {"guest_id": request.COOKIES.get("guest_id")}
+
+
+def is_ticket_exist(ticket_id, user_selector):
+    
+    if isinstance(user_selector, dict):
+        filter = user_selector
+    else:
+        filter = {'user':user_selector}
+
     try:
-        ticket = Ticket.objects.get(id=ticket_id, user=user)
+        ticket = Ticket.objects.get(
+            id=ticket_id,
+            **filter
+        )
         return ticket
     except Ticket.DoesNotExist:
         return False
@@ -23,7 +39,7 @@ def is_order_exist(order_id, user):
         return False
 
 
-def get_ticket_detailed(ticket_id, user):
+def get_ticket_detailed(ticket_id, user_selector):
     return (
         Ticket.objects.select_related(
             "order", "user", "assigned_to"
@@ -38,5 +54,6 @@ def get_ticket_detailed(ticket_id, user):
                 .order_by("created_at"),
             )
         )
-        .filter(id=ticket_id, user=user).first()
+        .filter(id=ticket_id, **user_selector)
+        .first()
     )
