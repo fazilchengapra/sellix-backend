@@ -6,6 +6,7 @@ cbor2==6.1.2
 certifi==2026.4.22
 cffi==2.0.0
 channels==4.3.2
+channels_redis==4.3.0
 charset-normalizer==3.4.7
 cloudinary==1.44.2
 constantly==23.10.4
@@ -34,6 +35,7 @@ python-decouple==3.8
 python-dotenv==1.2.2
 PyYAML==6.0.3
 razorpay==2.0.1
+redis==8.0.1
 referencing==0.37.0
 requests==2.33.1
 rpds-py==0.30.0
