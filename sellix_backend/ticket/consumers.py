@@ -74,7 +74,7 @@ class TicketConsumer(AsyncWebsocketConsumer):
         attachments = data.get("attachments") or []
 
         if not message_body:
-            return
+            return  
 
         user = self.scope["user"]
         if user.is_anonymous:

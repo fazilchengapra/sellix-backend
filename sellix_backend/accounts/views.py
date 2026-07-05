@@ -84,7 +84,7 @@ class LogoutView(APIView):
                 new_guest_id,
                 max_age=7 * 24 * 60 * 60,  
                 httponly=True,             
-                samesite='Lax',            
+                samesite='None',            
                 secure=True
             )
 
@@ -275,7 +275,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             value=access,
             httponly=True,
             secure=False,
-            samesite='Lax',
+            samesite='NOne',
             max_age=60*15
         )
 
@@ -284,7 +284,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             value=refresh,
             httponly=True,
             secure=False,
-            samesite='Lax',
+            samesite='None',
             max_age=60*60*24*7
         )
 
@@ -309,7 +309,7 @@ class CookieTokenRefreshView(APIView):
                 value=new_access,
                 httponly=True,
                 secure=False,
-                samesite="Lax",
+                samesite="None",
                 max_age=60 * 15 
             )
             return response

@@ -14,7 +14,7 @@ class GuestCartMiddleware(MiddlewareMixin):
                     new_guest_id,
                     max_age=7 * 24 * 60 * 60,  
                     httponly=True,             
-                    samesite='Lax',            
+                    samesite='None',            
                     secure=True
                 )
         return response
